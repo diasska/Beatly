@@ -39,17 +39,16 @@ const emit = defineEmits(['toggle-status']);
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 2px solid #e0e0e0; /* <-- Серая рамка для пустого чекбокса */
+  border: 2px solid #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
 }
 
-/* Стили для отмеченного чекбокса */
 .task-item.completed .checkbox {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
-  color: white; /* Цвет для галочки */
+  color: white;
 }
 </style>
