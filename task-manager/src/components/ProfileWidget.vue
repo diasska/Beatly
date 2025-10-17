@@ -1,26 +1,15 @@
 <template>
   <div class="widget-card profile-card">
     <div class="user-info">
-      <div class="avatar">
-        <!-- Иконка пользователя -->
-      </div>
-      <h3>{{ userName }}</h3>
     </div>
-
     <div class="calendar-wrapper">
       <v-calendar
         is-expanded
         transparent
         borderless
-        locale="ru-RU"
         :attributes="attrs"
+        @dayclick="onDayClick"
       >
-        <template #header="{ page }">
-          <div class="calendar-header">
-            <h4 class="month-title">{{ page.title }}</h4>
-            <button class="add-task-btn">+ Add Task</button>
-          </div>
-        </template>
       </v-calendar>
     </div>
   </div>
@@ -30,17 +19,13 @@
 import { ref } from 'vue';
 
 defineProps({ userName: String });
+const emit = defineEmits(['date-selected']);
 
-const attrs = ref([
-  {
-    key: 'today',
-    highlight: {
-      color: '#6c5ce7',
-      fillMode: 'solid',
-    },
-    dates: new Date(),
-  },
-]);
+function onDayClick(day) {
+  emit('date-selected', day.date);
+}
+
+const attrs = ref([]);
 </script>
 
 <style>

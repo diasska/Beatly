@@ -1,25 +1,54 @@
 <template>
   <div class="widget-card">
     <h4>Assignments ({{ tasks.length }})</h4>
-    <p class="completed-text">{{ completedTasksCount }} / {{ tasks.length }} completed</p>
+    <p class="completed-text">{{ filteredTasks.length }} tasks for selected date</p>
+
     <div class="task-list">
-      <TaskItem v-for="task in tasks" :key="task.id" :task="task" @toggle-status="toggleTaskStatus" />
+      <TaskItem
+        v-for="task in filteredTasks"
+        :key="task.id"
+        :task="task"
+        :current-date="selectedDateString"
+      @toggle-status="toggleTaskStatus"
+      />
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed } from 'vue';
 import TaskItem from './TaskItem.vue';
+
+const props = defineProps({
+  selectedDate: Date
+});
+
 const tasks = ref([
-  { id: 1, title: 'Task 1', isCompleted: true }, { id: 2, title: 'Task 2', isCompleted: true },
-  { id: 3, title: 'Task 3', isCompleted: false }, { id: 4, title: 'Task 4', isCompleted: false },
+  { id: 1, title: 'Task 1', isCompleted: true, date: '2025-10-17' },
+  { id: 2, title: 'Task 2', isCompleted: true, date: '2025-10-17' },
+  { id: 3, title: 'Task 3', isCompleted: false, date: '2025-10-18' },
+  { id: 4, title: 'Task 4', isCompleted: false, date: '2025-10-16' },
 ]);
-const completedTasksCount = computed(() => tasks.value.filter(t => t.isCompleted).length);
+
+const selectedDateString = computed(() => {
+  if (!props.selectedDate) return '';
+  return props.selectedDate.toISOString().split('T')[0];
+});
+
+const filteredTasks = computed(() => {
+  if (!selectedDateString.value) return [];
+  return tasks.value.filter(task => task.date === selectedDateString.value);
+});
+
 function toggleTaskStatus(taskId) {
   const task = tasks.value.find(t => t.id === taskId);
-  if (task) task.isCompleted = !task.isCompleted;
+  if (task) {
+    task.isCompleted = !task.isCompleted;
+  }
 }
 </script>
+
+
 <style scoped>
 .widget-card {
   background-color: var(--card-background-color);
