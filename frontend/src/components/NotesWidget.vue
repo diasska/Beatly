@@ -22,8 +22,8 @@
         <input
           v-if="editingNoteId === note.id"
           v-model="note.content"
-          @blur="finishEditing"
-          @keyup.enter="finishEditing"
+          @blur="finishEditing(note)"
+          @keyup.enter="finishEditing(note)"
           class="edit-input"
           v-focus
         />
@@ -38,43 +38,76 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-const notes = ref([
-  { id: 1, content: 'u can do this !' },
-  { id: 2, content: 'Double-click to edit me' },
-]);
-
+const notes = ref([]);
 const newNoteContent = ref('');
 const editingNoteId = ref(null);
-const vFocus = {
-  mounted: (el) => el.focus()
+
+const API_URL = 'http://localhost:8080/notes';
+
+onMounted(async () => {
+  await fetchNotes();
+});
+
+// Функция для получения заметок
+async function fetchNotes() {
+  try {
+    const response = await axios.get(API_URL);
+    notes.value = response.data;
+  } catch (err) {
+    console.error('Ошибка получения заметок:', err);
+  }
 }
 
-function addNote() {
+// Добавление заметки
+async function addNote() {
   if (newNoteContent.value.trim() === '') return;
 
-  const newNote = {
-    id: Date.now(),
-    content: newNoteContent.value,
-  };
-  notes.value.unshift(newNote);
-  newNoteContent.value = '';
-}
-function deleteNote(idToDelete) {
-  notes.value = notes.value.filter(note => note.id !== idToDelete);
+  try {
+    await axios.post(API_URL, {
+      content: newNoteContent.value,
+      
+    });
+    // Обновляем список после добавления
+    await fetchNotes();
+    newNoteContent.value = '';
+  } catch (err) {
+    console.error('Ошибка при добавлении заметки:', err);
+  }
 }
 
+// Удаление заметки
+async function deleteNote(id) {
+  try {
+    await axios.delete(`${API_URL}/${id}`);
+    // Обновляем список после удаления
+    await fetchNotes();
+  } catch (err) {
+    console.error('Ошибка при удалении заметки:', err);
+  }
+}
+
+// Начало редактирования
 function startEditing(note) {
   editingNoteId.value = note.id;
 }
 
-function finishEditing() {
-  editingNoteId.value = null;
+// Завершение редактирования
+async function finishEditing(note) {
+  try {
+    await axios.put(`${API_URL}/${note.id}`, {
+      content: note.content,
+    });
+    editingNoteId.value = null;
+    // Обновляем список после редактирования
+    await fetchNotes();
+  } catch (err) {
+    console.error('Ошибка при обновлении заметки:', err);
+  }
 }
-
 </script>
-
 <style scoped>
 .notes-card {
   background-color: var(--accent-color);
@@ -111,7 +144,6 @@ function finishEditing() {
   height: 36px;
   cursor: pointer;
 }
-
 
 /* Список заметок */
 .notes-list {

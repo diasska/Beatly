@@ -43,7 +43,10 @@ const tasks = ref([])
 // Форматируем дату в строку YYYY-MM-DD
 const selectedDateString = computed(() => {
   if (!props.selectedDate) return ''
-  return props.selectedDate.toISOString().split('T')[0]
+  const year = props.selectedDate.getFullYear()
+  const month = String(props.selectedDate.getMonth() + 1).padStart(2, '0')
+  const day = String(props.selectedDate.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 })
 
 // Фильтрация по текущей дате

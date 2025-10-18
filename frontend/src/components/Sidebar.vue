@@ -2,7 +2,7 @@
   <nav class="sidebar">
     <div class="logo-container">
       <img src="@/assets/logo.png" alt="Our name logo" class="logo-img" />
-      <h2>Our name</h2>
+      <h2>Task Manager</h2>
     </div>
     <ul class="nav-links">
       <li class="nav-link">
